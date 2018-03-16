@@ -2,3 +2,4 @@ secret_steam_key.py
 secret_settings.py
 __pycache__
 virtual_env
+request.py
