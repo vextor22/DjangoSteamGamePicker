@@ -4,3 +4,5 @@ __pycache__
 virtual_env
 request.py
 *sqlite*
+
+settings_secret.py
