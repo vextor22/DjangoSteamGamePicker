@@ -15,5 +15,7 @@ class SteamUser(models.Model):
     user_id = models.BigIntegerField(blank=False)
     owned_games = models.ManyToManyField(GameInfo)
 
+
+
     def __str__(self):
         return "ID: %s, User Name: %s" % (self.user_id, self.name)

@@ -8,11 +8,12 @@ import SteamAPI
 from secret_steam_key import *
 # Create your views here.
 
-def index(request):
+def select_game(request):
     random.seed(os.urandom(4))
+    
+    steamID = request.POST.get('steam_id')
 
     outputBuffer = [] 
-    steamID = '76561197995406081'
 
     steamConn = SteamAPI.SteamAPI(steam_key)
 
@@ -42,3 +43,6 @@ def index(request):
     outputBuffer.append("Random Game Name: %s, playtime: % 6.2f" % (appDetails[randomGame[0]],float(randomGame[1])/60))
 
     return HttpResponse('<br />'.join(outputBuffer))
+
+def index(request):
+    return render(request, 'home.html')
