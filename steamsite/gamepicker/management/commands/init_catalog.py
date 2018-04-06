@@ -28,15 +28,22 @@ class Command(BaseCommand):
                 if app.exists(): 
                     #                    self.stdout.write(self.style.SUCCESS("Already have %s" % name))
                     app = app.first()
-                    if app.game_name is not name:
+                    if app.game_name != name:
+                        self.stdout.write(self.style.SUCCESS("%s, %s" % (app.game_name, name)))
                         updates += 1
                         app.game_name = name
+
                         app.save()
                 else: 
-                    self.stdout.write(self.style.SUCCESS("New game found: %s" % name))
+                    #self.stdout.write(self.style.SUCCESS("New game found: %s" % name))
                     new_games += 1
                     app = GameInfo(game_name=name, game_id=appid, fetch_date=timezone.now())
-                    app.save()
+                    try:
+                        app.save()
+                    except Exception as e:
+                        self.stdout.write(self.style.SUCCESS(name))
+                        
+                        self.stdout.write(self.style.ERROR(e))
                 progress.update(idx)
 
         self.stdout.write(self.style.SUCCESS("Out of %s games, %s were updated. %s new games found." %
