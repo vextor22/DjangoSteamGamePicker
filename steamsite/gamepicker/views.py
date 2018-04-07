@@ -9,11 +9,14 @@ from .models import GameInfo, SteamUser,Ownership
 from secret_steam_key import *
 # Create your views here.
 
-def index(request):
+def select_game(request):
     random.seed(os.urandom(4))
+    
+    steamID = request.POST.get('steam_id')
 
     outputBuffer = [] 
-    steamID = ''
+    
+    
     user = SteamUser.get_or_update_user(steam_key, steamID)
     outputBuffer.append("Username: %s" % user.name)
     user_games = Ownership.objects.filter(user=user)
@@ -34,3 +37,6 @@ def index(request):
             (randomGame.game.game_name,float(randomGame.play_time)/60))
 
     return HttpResponse('<br />'.join(outputBuffer))
+
+def index(request):
+    return render(request, 'home.html')

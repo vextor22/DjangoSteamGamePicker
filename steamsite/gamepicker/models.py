@@ -94,6 +94,8 @@ class SteamUser(models.Model):
 
         return gameListSorted
 
+
+
     def __str__(self):
         return "ID: %s, User Name: %s" % (self.user_id, self.name)
 
