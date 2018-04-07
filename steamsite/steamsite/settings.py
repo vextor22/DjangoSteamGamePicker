@@ -74,8 +74,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
             'read_default_file': 'steamsite/my.cnf',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",                                                  
-            'init_command': "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'",                                                  
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'; \
+                             SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';",
             },
     }
 }
