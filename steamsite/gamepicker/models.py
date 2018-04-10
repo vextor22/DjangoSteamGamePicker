@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import timedelta
 import SteamAPI
+
+import time
 # Create your models here.
 
 class GameInfo(models.Model):
@@ -28,32 +30,41 @@ class SteamUser(models.Model):
     def is_user_fresh(self):
         cur_time = timezone.now()
         delta = self.last_updated - cur_time
-        if timedelta(minutes=-60) < delta:
+        if timedelta(minutes=-1) < delta:
             return True
         else:
             return False
 
+
+    #Largely the same as user creation
+    #TODO refactor user data operations for DRY
     def _update_user(steam_key, steamID):
-        print("Updating")
+        start = time.time()
         user_model = SteamUser.objects.get(user_id=steamID)
-
         user_name = SteamUser.get_user_name(steam_key, steamID)
+
         games = SteamUser.get_game_list(steam_key, steamID)
-
         game_ids = {game_id: play_time for (game_id, play_time) in games}
-
         game_models = GameInfo.objects.filter(game_id__in=game_ids)
-
+        game_models_dict = {model.game_id: model for model in game_models}
 
         user_model.name = user_name
         user_model.user_id = steamID
         user_model.last_updated = timezone.now()
         user_model.owned_games.clear()
         user_model.save()
+
+        relations=[]
         for (key, value) in game_ids.items():
-            relation = Ownership(game=game_models.get(game_id=key), user=user_model, play_time=value)
-            relation.save()
+            relations.append(
+                    Ownership(game=game_models_dict[key], user=user_model, play_time=value))
+                    #Ownership(game=game_models.get(game_id=key), user=user_model, play_time=value))
+        Ownership.objects.bulk_create(relations)
+
+
+        end = time.time()
         return user_model
+
     def get_or_update_user(steam_key, steamID):
         try:
             user_model = SteamUser.objects.get(user_id=steamID)
@@ -69,17 +80,26 @@ class SteamUser(models.Model):
             print("Creating user...")
             user_name = SteamUser.get_user_name(steam_key, steamID)
             games = SteamUser.get_game_list(steam_key, steamID)
-
+            
+            #play time data to enrich relationship object
             game_ids = {game_id: play_time for (game_id, play_time) in games}
 
+            #find game objects owned by user
             game_models = GameInfo.objects.filter(game_id__in=game_ids)
 
+            #materialize queryset into dict for faster lookup than .get()
+            game_models_dict = {model.game_id: model for model in game_models}
 
+            #Not data safe if relationship object creation fails, Impove!
             user_model = SteamUser(name=user_name, user_id=steamID)
             user_model.save()
+           
+            #generate User,Game relationships and bulk add to reduce DB queries VS .save()
+            relations=[]
             for (key, value) in game_ids.items():
-                relation = Ownership(game=game_models.get(game_id=key), user=user_model, play_time=value)
-                relation.save()
+                relations.append(
+                        Ownership(game=game_models_dict[key], user=user_model, play_time=value))
+            Ownership.objects.bulk_create(relations)
         return user_model
 
     def get_game_list(steam_key, user_id):
