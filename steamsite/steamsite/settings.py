@@ -20,7 +20,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -74,6 +73,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
             'read_default_file': 'steamsite/my.cnf',
+            'charset': 'utf8mb4',
+            'use_unicode': True,
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'; \
                              SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';",
             },
