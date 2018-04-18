@@ -30,7 +30,7 @@ class SteamUser(models.Model):
     def is_user_fresh(self):
         cur_time = timezone.now()
         delta = self.last_updated - cur_time
-        if timedelta(minutes=-1) < delta:
+        if timedelta(minutes=-60) < delta:
             return True
         else:
             return False

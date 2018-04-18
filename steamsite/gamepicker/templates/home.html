@@ -1,11 +1,16 @@
-<!DOCTYPE html>
-<html>
-    <head lang="en">
-      <meta charset="UTF-8">
-      <title>Game Picker</title>
+{% extends 'base.html' %}
+{% block pagetitle %}Steam Game Picker{% endblock %}
 
+{% block body %}
       <body>
+          <div class="container">
+          <div class="row">
+          <div class="col-lg-6 offset-md-3 jumbotron">
         <h1>Enter your steam ID:</h1>
+          </div>
+          </div>
+          <div class="row">
+          <div class="col-md-6 offset-md-3">
         <form action="/steam/select_game/" method="post">
             {% csrf_token %}
             <label for="steam_id"> Your ID: </label>
@@ -13,6 +18,8 @@
             <input type="submit" value="Select Game!">
           
         </form>
+          </div>
+          </div>
+          </div>
       </body>
-    </head>
-</html>
+{% endblock %}

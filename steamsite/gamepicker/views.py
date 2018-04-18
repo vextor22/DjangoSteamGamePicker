@@ -20,23 +20,21 @@ def select_game(request):
     user = SteamUser.get_or_update_user(steam_key, steamID)
     outputBuffer.append("Username: %s" % user.name)
     user_games = Ownership.objects.filter(user=user)
-    #get list of all games and organize into map of id -> name
-#    appJson = steamConn.getAppList()
-#    apps = appJson['applist']['apps']
-#    appDetails = {}
-#    for app in apps:
-#        appDetails[app['appid']] = app['name']
-    
-    #collect owned games with their names
+    game_list = []
     for owned_game in user_games:
-        outputBuffer.append("Game Name: %s, playtime: % 6.2f" % 
-                (owned_game.game.game_name,float(owned_game.play_time)/60))
+        game_list.append((owned_game.game.game_name,float(owned_game.play_time)/60))
 
     randomGame = random.choices(user_games)[0]
     outputBuffer.append("Random Game Name: %s, playtime: % 6.2f" % 
             (randomGame.game.game_name,float(randomGame.play_time)/60))
 
-    return HttpResponse('<br />'.join(outputBuffer))
+    #return HttpResponse('<br />'.join(outputBuffer))
+    play_time_string = "% 6.2f" % (float(randomGame.play_time)/60)
+    context = {'user_name': user.name, 
+               'random_game': randomGame.game.game_name, 
+               'random_game_time': play_time_string,
+               'game_info': game_list}
+    return render(request, 'game.html', context)
 
 def index(request):
     return render(request, 'home.html')

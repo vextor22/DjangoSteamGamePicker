@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block pagetitle %}Your Games{% endblock %}
+
+{% block body %}
+      <body>
+          <div class="container">
+          <div class="row">
+          <div class="col-lg-auto offset-sm jumbotron">
+          <h1>Player Name: {{ user_name }} </h1>
+          <h1>Your Random Game: {{ random_game }}, played for: {{ random_game_time }}</h1>
+          </div>
+          </div>
+          {% for game, play_time in game_info %}
+
+          <div class="row">
+              <div class="col-md-6 offset-md-3">
+              <p>Game: {{ game }}, Play Time: {{ play_time }} </p>
+              </div>
+          </div>
+          {% endfor %}
+          </div>
+      </body>
+{% endblock %}
