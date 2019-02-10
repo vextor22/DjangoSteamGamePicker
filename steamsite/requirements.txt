@@ -1,11 +1,12 @@
 certifi==2018.1.18
 chardet==3.0.4
-Django==2.0.3
+Django==2.1.5
 idna==2.6
+mysqlclient==1.4.1
 progressbar2==3.36.0
 python-utils==2.3.0
 pytz==2018.3
 requests==2.21.0
 six==1.11.0
 -e git+git@github.com:vextor22/steamWebPyAPI.git@214b5835e3b5fa6aa601ef18038dddb4b32ebabd#egg=SteamAPI
-urllib3==1.22
+urllib3==1.24.1
