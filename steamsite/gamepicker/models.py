@@ -17,6 +17,7 @@ class GameInfo(models.Model):
 
 class SteamUser(models.Model):
     name = models.CharField(max_length=150)
+    vanity_name = models.CharField(max_length=150, blank=True, null=True)
     user_id = models.BigIntegerField(db_index=True, blank=False)
     owned_games = models.ManyToManyField(GameInfo, through='Ownership')
     last_updated = models.DateTimeField('date cached', default=timezone.now)
