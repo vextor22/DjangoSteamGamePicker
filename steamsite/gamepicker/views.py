@@ -16,7 +16,6 @@ def select_game(request):
 
     outputBuffer = [] 
     
-    
     user = SteamUser.get_or_update_user(steam_key, steamID)
     outputBuffer.append("Username: %s" % user.name)
     user_games = Ownership.objects.filter(user=user)

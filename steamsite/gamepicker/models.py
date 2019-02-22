@@ -22,6 +22,13 @@ class SteamUser(models.Model):
     owned_games = models.ManyToManyField(GameInfo, through='Ownership')
     last_updated = models.DateTimeField('date cached', default=timezone.now)
   
+    def get_user_id(steam_key, user_id):
+        steamConn = SteamAPI.SteamAPI(steam_key)
+
+        #get username
+        playerID = steamConn.getPlayerID(user_id)
+        return playerID
+
     def get_user_name(steam_key, user_id):
         steamConn = SteamAPI.SteamAPI(steam_key)
 
@@ -41,6 +48,9 @@ class SteamUser(models.Model):
     #TODO refactor user data operations for DRY
     def _update_user(steam_key, steamID):
         start = time.time()
+        if vanityName:
+            vanity = steamID
+            steamID = SteamUser.get_user_id(steam_key, vanity)
         user_model = SteamUser.objects.get(user_id=steamID)
         user_name = SteamUser.get_user_name(steam_key, steamID)
 
@@ -51,6 +61,7 @@ class SteamUser(models.Model):
 
         user_model.name = user_name
         user_model.user_id = steamID
+        user_model.vanity_name = vanity
         user_model.last_updated = timezone.now()
         user_model.owned_games.clear()
         user_model.save()
@@ -65,10 +76,24 @@ class SteamUser(models.Model):
 
         end = time.time()
         return user_model
+    def isVanity(userID):
+        try:
+            int(userID)
+            return False
+        except:
+            return True
+    
 
     def get_or_update_user(steam_key, steamID):
+        user = SteamUser.get_or_update_user_id(steam_key, steamID, SteamUser.isVanity(steamID))
+        return user
+    def get_or_update_user_id(steam_key, steamID, vanityName):
         try:
-            user_model = SteamUser.objects.get(user_id=steamID)
+            if vanityName:
+                user_model = SteamUser.objects.get(vanity_name=steamID)
+            else:
+                user_model = SteamUser.objects.get(user_id=steamID)
+                  
             
             print("User Found!")
             if not user_model.is_user_fresh():
@@ -79,6 +104,9 @@ class SteamUser(models.Model):
                 
         except ObjectDoesNotExist:
             print("Creating user...")
+            if vanityName:
+                vanity = steamID
+                steamID = SteamUser.get_user_id(steam_key, vanity)
             user_name = SteamUser.get_user_name(steam_key, steamID)
             games = SteamUser.get_game_list(steam_key, steamID)
             
@@ -92,7 +120,7 @@ class SteamUser(models.Model):
             game_models_dict = {model.game_id: model for model in game_models}
 
             #Not data safe if relationship object creation fails, Impove!
-            user_model = SteamUser(name=user_name, user_id=steamID)
+            user_model = SteamUser(name=user_name, user_id=steamID, vanity_name=vanity)
             user_model.save()
            
             #generate User,Game relationships and bulk add to reduce DB queries VS .save()
