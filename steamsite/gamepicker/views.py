@@ -23,7 +23,9 @@ def select_game(request):
     for owned_game in user_games:
         game_list.append((owned_game.game.game_name,float(owned_game.play_time)/60))
 
+    #TODO: make steam api return empty game object
     randomGame = random.choices(user_games)[0]
+    
     outputBuffer.append("Random Game Name: %s, playtime: % 6.2f" % 
             (randomGame.game.game_name,float(randomGame.play_time)/60))
 

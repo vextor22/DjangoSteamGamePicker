@@ -48,7 +48,7 @@ class SteamUser(models.Model):
     #TODO refactor user data operations for DRY
     def _update_user(steam_key, steamID):
         start = time.time()
-        if vanityName:
+        if SteamUser.isVanity(steamID):
             vanity = steamID
             steamID = SteamUser.get_user_id(steam_key, vanity)
         user_model = SteamUser.objects.get(user_id=steamID)
@@ -135,7 +135,13 @@ class SteamUser(models.Model):
         steamConn = SteamAPI.SteamAPI(steam_key)
 
         #gather user's list of owned games into list of (id, playtime)
-        games = steamConn.getOwnedGames(user_id)['response']['games']
+        try:
+            games = steamConn.getOwnedGames(user_id)['response']['games']
+        except KeyError:
+            print("User's game list is blank/private")
+            games = []
+
+
         gameList = []
         for game in games:
             gameList.append((game['appid'],game['playtime_forever']))
