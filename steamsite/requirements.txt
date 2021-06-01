@@ -9,4 +9,4 @@ pytz==2018.3
 requests==2.21.0
 six==1.11.0
 -e git+git@github.com:vextor22/steamWebPyAPI.git@214b5835e3b5fa6aa601ef18038dddb4b32ebabd#egg=SteamAPI
-urllib3==1.24.1
+urllib3==1.26.5
